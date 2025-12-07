@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import initDB from "./config/db";
 import { userRoutes } from "./modules/users/user.routes";
 import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
+import { bookingRoutes } from "./modules/bookings/booking.routes";
 
 // express
 const app = express();
@@ -26,7 +27,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/vehicles", vehicleRoutes);
 
 // Bookings CRUD
-// app.use("/api/v1/bookings");
+app.use("/api/v1/bookings", bookingRoutes);
 
 // Auth
 // app.use("/api/v1/auth");
