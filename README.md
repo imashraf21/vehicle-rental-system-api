@@ -2,7 +2,7 @@
 
 This repository contains the backend API for a Vehicle Rental Management System, designed to handle user authentication, vehicle management, and rental bookings.
 
-| **Live API URL** | `[ https://vehicle-rental-system-taupe.vercel.app/]` |
+| **[Live API URL](https://vehicle-rental-system-taupe.vercel.app/)**
 
 ---
 
