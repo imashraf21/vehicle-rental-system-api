@@ -25,12 +25,12 @@ This repository contains the backend API for a Vehicle Rental Management System,
 ### Booking Management (`/api/v1/bookings`)
 
 -   **Atomic Booking Creation:** Calculates the `total_price` based on vehicle's `daily_rent_price` and rental duration in a single, atomic database query.
--   **Data Linking:** Utilizes Foreign Keys to link bookings to specific users ($\text{customer\_id}$) and vehicles ($\text{vehicle\_id}$).
+-   **Data Linking:** Utilizes Foreign Keys to link bookings to specific users `customer_id` and vehicles `vehicle_id`.
 -   **Status Lifecycle:** Manages booking status: 'active', 'cancelled', 'returned'.
 -   **Business Logic Enforcement:**
-    -   **Customer Cancellation:** Allows cancellation only if the $\text{rent\_start\_date}$ has not passed.
+    -   **Customer Cancellation:** Allows cancellation only if the `rent_start_date` has not passed.
     -   **Admin/System Return:** Admins can mark a booking as 'returned', which automatically updates the associated vehicle's status to 'available'.
-    -   **Date Constraint:** Enforces that the $\text{rent\_end\_date}$ must be after the $\text{rent\_start\_date}$.
+    -   **Date Constraint:** Enforces that the `rent_end_date` must be after the `rent_start_date`.
 
 ---
 
