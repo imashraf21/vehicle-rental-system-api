@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import initDB from "./config/db";
-import { userRoute } from "./modules/users/user.routes";
+import { userRoutes } from "./modules/users/user.routes";
+import { vehicleRoutes } from "./modules/vehicles/vehicle.routes";
 
 // express
 const app = express();
@@ -19,6 +20,24 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Users CRUD
-app.use("/api/v1/users", userRoute);
+app.use("/api/v1/users", userRoutes);
+
+// Vehicles CRUD
+app.use("/api/v1/vehicles", vehicleRoutes);
+
+// Bookings CRUD
+// app.use("/api/v1/bookings");
+
+// Auth
+// app.use("/api/v1/auth");
+
+// 404
+app.use((req: Request, res: Response) => {
+	res.status(404).json({
+		success: false,
+		message: "Route not found",
+		path: req.path,
+	});
+});
 
 export default app;
