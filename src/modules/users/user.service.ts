@@ -1,20 +1,20 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../config/db";
 
-const createUserDB = async (payload: Record<string, unknown>) => {
-	const { name, email, password, phone, role } = payload;
+// const createUserDB = async (payload: Record<string, unknown>) => {
+// 	const { name, email, password, phone, role } = payload;
 
-	const hashedPassword = await bcrypt.hash(password as string, 12);
+// 	const hashedPassword = await bcrypt.hash(password as string, 12);
 
-	const result = await pool.query(
-		`INSERT INTO users(name, email, password, phone, role) 
-        VALUES ($1, $2, $3, $4, $5) 
-        RETURNING id, name, email, phone, role`,
-		[name, email, hashedPassword, phone, role]
-	);
+// 	const result = await pool.query(
+// 		`INSERT INTO users(name, email, password, phone, role)
+//         VALUES ($1, $2, $3, $4, $5)
+//         RETURNING id, name, email, phone, role`,
+// 		[name, email, hashedPassword, phone, role]
+// 	);
 
-	return result;
-};
+// 	return result;
+// };
 
 const getAllUserDB = async () => {
 	const result = await pool.query(
@@ -24,39 +24,61 @@ const getAllUserDB = async () => {
 	return result;
 };
 
-const getSingleUserDB = async (id: string) => {
-	const result = await pool.query(
-		`SELECT id,name,email,phone,role FROM users WHERE id = $1`,
-		[id]
-	);
+// const getSingleUserDB = async (id: string) => {
+// 	const result = await pool.query(
+// 		`SELECT id,name,email,phone,role FROM users WHERE id = $1`,
+// 		[id]
+// 	);
 
-	return result;
-};
+// 	return result;
+// };
 
 const updateUserDB = async (
 	name: string,
 	email: string,
 	phone: string,
+	role: string,
+	currentRole: string,
 	id: string
 ) => {
+	if (currentRole === "customer" && role === "admin") {
+		throw new Error("You dont have access to change role");
+	}
+
 	const result = await pool.query(
-		`UPDATE users SET name=$1, email=$2, phone=$3 WHERE id=$4 RETURNING id, name, email, phone, role`,
-		[name, email, phone, id]
+		`UPDATE users SET name=$1, email=$2, phone=$3, role=$4 WHERE id=$5 RETURNING id, name, email, phone, role`,
+		[name, email, phone, role, id]
 	);
 
 	return result;
 };
 
 const deleteUserDB = async (id: string) => {
+	const checkBooking = await pool.query(
+		`SELECT status FROM bookings WHERE customer_id=$1`,
+		[id]
+	);
+
+	if (
+		checkBooking.rowCount !== 0 &&
+		checkBooking.rows[0].status === "active"
+	) {
+		throw new Error("Active booking exists!");
+	}
+
+	await pool.query(
+		`UPDATE bookings SET customer_id=NULL WHERE customer_id=$1`,
+		[id]
+	);
 	const result = await pool.query(`DELETE FROM users WHERE id=$1`, [id]);
 
 	return result;
 };
 
 export const userServices = {
-	createUserDB,
+	// createUserDB,
 	getAllUserDB,
-	getSingleUserDB,
+	// getSingleUserDB,
 	updateUserDB,
 	deleteUserDB,
 };

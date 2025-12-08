@@ -50,6 +50,7 @@ const updateVehicleDB = async (
 		daily_rent_price,
 		availability_status,
 	} = payload;
+
 	const result = await pool.query(
 		`UPDATE vehicles SET vehicle_name=$1, type=$2, registration_number=$3, daily_rent_price=$4, availability_status=$5 WHERE id=$6 RETURNING *`,
 		[
@@ -66,6 +67,22 @@ const updateVehicleDB = async (
 };
 
 const deleteVehicleDB = async (id: string) => {
+	const checkBooking = await pool.query(
+		`SELECT status FROM bookings WHERE vehicle_id=$1`,
+		[id]
+	);
+
+	if (
+		checkBooking.rowCount !== 0 &&
+		checkBooking.rows[0].status === "active"
+	) {
+		throw new Error("Active booking exists!");
+	}
+
+	await pool.query(
+		`UPDATE bookings SET vehicle_id=NULL WHERE vehicle_id=$1`,
+		[id]
+	);
 	const result = await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id]);
 
 	return result;

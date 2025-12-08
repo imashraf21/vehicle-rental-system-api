@@ -18,9 +18,15 @@ const auth = (...roles: string[]) => {
 
 			if (roles.length && !roles.includes(decoded.role as string)) {
 				return res.status(403).json({
+					success: false,
 					message: "Unauthorized",
 				});
 			}
+
+			// send the decoded info
+			(req as JwtPayload).user = decoded;
+
+			next();
 		} catch (error: any) {
 			res.status(500).json({
 				success: false,
@@ -29,3 +35,5 @@ const auth = (...roles: string[]) => {
 		}
 	};
 };
+
+export default auth;
